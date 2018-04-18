@@ -1,6 +1,7 @@
 import ChatRoom from './ChatRoom.js';
 import TicTacToe from './TicTacToe.js';
 import RockPaperScissors from './RockPaperScissors.js';
+import MyGame from './MyGame';
 
 const gameData = {
 
@@ -30,7 +31,14 @@ const gameData = {
     maxUsers: 2,
     component: RockPaperScissors,
   },
-
+  myGame:{
+    title: 'Best chess game ever',
+    authors:'Aziz, Mahfuz',
+    description:'',
+    minUsers:2,
+    maxUsers:2,
+    component: MyGame
+  }
 
 }
 
