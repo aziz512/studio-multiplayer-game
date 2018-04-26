@@ -35,7 +35,7 @@ const gameData = {
     title: 'Best chess game ever',
     authors:'Aziz, Mahfuz',
     description:'',
-    minUsers:2,
+    minUsers:1,
     maxUsers:2,
     component: MyGame
   }
