@@ -70,16 +70,24 @@ export default class Board extends Component {
     this.tileClicked = this.tileClicked.bind(this);
   }
 
-  tileClicked(position){
+  tileClicked(position, figure){
     if(!this.state.selectedTile){
-      this.setState({
-        selectedTile: position
-      });
+      if(figure){
+        this.setState({
+          selectedTile: position
+        });
+      }
     }
     else{
       let figures = this.state.figures;
       figures.forEach(fig => {
         if(fig.position == this.state.selectedTile){
+          let selectedFigure = figures.find(x => x.position == this.state.selectedTile);
+          if(selectedFigure && figure){
+            if(selectedFigure.color === figure.color){
+              return;
+            }
+          }
           fig.position = position;
         }
       });
