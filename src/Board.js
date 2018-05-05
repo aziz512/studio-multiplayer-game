@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Tile from './Tile';
+import firebase from 'firebase';
 
 let numToLetter = {
   1:'a',
@@ -186,6 +187,24 @@ export default class Board extends Component {
       figures: figures
     }
     this.tileClicked = this.tileClicked.bind(this);
+    this.updateFigures = this.updateFigures.bind(this);
+    this.loadFigures = this.loadFigures.bind(this);
+    this.loadFigures();
+  }
+
+  loadFigures(){
+    let sessionRef = firebase.database().ref('session-metadata/'+this.props.gameId + '/figures');
+    sessionRef.on('value', (snapshot) => {
+      this.setState({
+        selectedTile: undefined,
+        figures: snapshot.val()
+      });
+    });
+  }
+
+  updateFigures(){
+    let figuresRef = firebase.database().ref('session-metadata/' + this.props.gameId + '/figures');
+    figuresRef.set(this.state.figures).then(() => {});
   }
 
   tileClicked(position, figure){
@@ -213,13 +232,11 @@ export default class Board extends Component {
         selectedTile:undefined,
         figures: figures
       });
+      this.updateFigures();
     }
   }
   
   render(){
-    // update firebase figures
-    
-    
     let rows = [];
     for(let r = 8; r >= 1; r--){
       let tiles = [];
@@ -227,7 +244,7 @@ export default class Board extends Component {
         let blackOrWhite = r % 2 != 0 ? (i%2 !=0 ? 'black':'white') : (i%2 == 0 ? 'black':'white');
         let position = numToLetter[i]+r;
         tiles.push(<Tile color={blackOrWhite} position={position} onClick={this.tileClicked}
-                         figure={figures.find((fig) => fig.position == position)}/>);
+                         figure={this.state.figures.find((fig) => fig.position == position)}/>);
       }
       rows.push(<div className="row">{tiles}</div>);
     }
