@@ -20,6 +20,41 @@ let figures = [
   },
   {
     color:'white',
+    type:'pawn',
+    position:'b2'
+  },
+  {
+    color:'white',
+    type:'pawn',
+    position:'c2'
+  },
+  {
+    color:'white',
+    type:'pawn',
+    position:'d2'
+  },
+  {
+    color:'white',
+    type:'pawn',
+    position:'e2'
+  },
+  {
+    color:'white',
+    type:'pawn',
+    position:'f2'
+  },
+  {
+    color:'white',
+    type:'pawn',
+    position:'g2'
+  },
+  {
+    color:'white',
+    type:'pawn',
+    position:'h2'
+  },
+  {
+    color:'white',
     type:'rook',
     position:'a1'
   },
@@ -57,6 +92,89 @@ let figures = [
     color:'white',
     type:'rook',
     position:'h1'
+  },
+  
+  ///////  PLAYER 2    ////////
+  
+  {
+    color:'black',
+    type:'pawn',
+    position:'a7'
+  },
+  {
+    color:'black',
+    type:'pawn',
+    position:'b7'
+  },
+  {
+    color:'black',
+    type:'pawn',
+    position:'c7'
+  },
+  {
+    color:'black',
+    type:'pawn',
+    position:'d7'
+  },
+  {
+    color:'black',
+    type:'pawn',
+    position:'e7'
+  },
+  {
+    color:'black',
+    type:'pawn',
+    position:'f7'
+  },
+  {
+    color:'black',
+    type:'pawn',
+    position:'g7'
+  },
+  {
+    color:'black',
+    type:'pawn',
+    position:'h7'
+  },
+  {
+    color:'black',
+    type:'rook',
+    position:'a8'
+  },
+  {
+    color:'black',
+    type:'knight',
+    position:'b8'
+  },
+  {
+    color:'black',
+    type:'bishop',
+    position:'c8'
+  },
+  {
+    color:'black',
+    type:'queen',
+    position:'d8'
+  },
+  {
+    color:'black',
+    type:'king',
+    position:'e8'
+  },
+  {
+    color:'black',
+    type:'bishop',
+    position:'f8'
+  },
+  {
+    color:'black',
+    type:'knight',
+    position:'g8'
+  },
+  {
+    color:'black',
+    type:'rook',
+    position:'h8'
   }
 ];
 
@@ -99,7 +217,9 @@ export default class Board extends Component {
   }
   
   render(){
-    console.log(this.state);
+    // update firebase figures
+    
+    
     let rows = [];
     for(let r = 8; r >= 1; r--){
       let tiles = [];
