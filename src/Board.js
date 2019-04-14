@@ -184,12 +184,24 @@ export default class Board extends Component {
     super(props);
     this.state ={
       selectedTile:undefined,
-      figures: figures
+      figures: figures, 
+      moves:[]
     }
     this.tileClicked = this.tileClicked.bind(this);
     this.updateFigures = this.updateFigures.bind(this);
     this.loadFigures = this.loadFigures.bind(this);
     this.loadFigures();
+    this.loadMoves = this.loadMoves.bind(this);
+    this.loadMoves();
+  }
+  
+  loadMoves(){
+    let movesRef = firebase.database().ref('session-metadata/' + this.props.gameId + '/moves');
+    movesRef.on('value', snapshot => {
+      let newState = this.state;
+      newState.moves = Object.values(snapshot.val() || {});
+      this.setState(Object.assign({}, newState));
+    });
   }
 
   loadFigures(){
@@ -197,59 +209,111 @@ export default class Board extends Component {
     sessionRef.on('value', (snapshot) => {
       this.setState({
         selectedTile: undefined,
-        figures: snapshot.val()
+        figures: snapshot.val() || figures,
+        moves: this.state.moves
       });
     });
   }
 
-  updateFigures(){
+  updateFigures(figures, move){
     let figuresRef = firebase.database().ref('session-metadata/' + this.props.gameId + '/figures');
-    figuresRef.set(this.state.figures).then(() => {});
+    let movesRef = firebase.database().ref('session-metadata/' + this.props.gameId + '/moves');
+    movesRef.push(move);
+    return figuresRef.set(figures);
   }
 
   tileClicked(position, figure){
+    if(this.state.moves.length > 0){
+      if(this.state.moves[this.state.moves.length - 1].color == this.props.color){
+        return;
+      }
+    }
+    else{
+      if(this.props.color != 'white'){
+        return;
+      }
+    }
     if(!this.state.selectedTile){
       if(figure){
-        this.setState({
-          selectedTile: position
-        });
+        if(this.props.color == figure.color){
+          this.setState({
+            selectedTile: position,
+            figures: this.state.figures,
+            moves: this.state.moves
+          });
+        }
       }
     }
     else{
       let figures = this.state.figures;
-      figures.forEach(fig => {
+      let isMoved = false;
+      let move = null;
+      figures.forEach((fig,i) => {
         if(fig.position == this.state.selectedTile){
-          let selectedFigure = figures.find(x => x.position == this.state.selectedTile);
-          if(selectedFigure && figure){
-            if(selectedFigure.color === figure.color){
+          if(fig && figure){
+            if(fig.color === figure.color){
               return;
             }
+            else{
+              isMoved = true;
+            }
           }
+          move = Object.assign({}, fig);
+          move.position1 = position;
           fig.position = position;
         }
       });
+      let newFigures = figures.filter(x => {
+        return isMoved ? !(x.position == figure.position && x.color == figure.color) : true;
+      });
       this.setState({
         selectedTile:undefined,
-        figures: figures
+        figures: newFigures,
+        moves: this.state.moves
       });
-      this.updateFigures();
+      this.updateFigures(newFigures, move);
     }
   }
   
   render(){
+    let moves = [];
+    moves = this.state.moves.map((move, i) => {
+      return (<div key={i}>{move.position} {move.position1}</div>);
+    });
     let rows = [];
-    for(let r = 8; r >= 1; r--){
-      let tiles = [];
-      for(let i = 1; i <= 8; i++){
-        let blackOrWhite = r % 2 != 0 ? (i%2 !=0 ? 'black':'white') : (i%2 == 0 ? 'black':'white');
-        let position = numToLetter[i]+r;
-        tiles.push(<Tile color={blackOrWhite} position={position} onClick={this.tileClicked}
-                         figure={this.state.figures.find((fig) => fig.position == position)}/>);
+    if(this.props.color == 'white'){
+      for(let r = 8; r >= 1; r--){
+        let tiles = [];
+        for(let i = 1; i <= 8; i++){
+          let blackOrWhite = r % 2 != 0 ? (i%2 !=0 ? 'black':'white') : (i%2 == 0 ? 'black':'white');
+          let position = numToLetter[i]+r;
+          tiles.push(<Tile color={blackOrWhite} position={position} click={this.tileClicked}
+                           figure={this.state.figures.find((fig) => fig.position == position)}
+                           isSelected={this.state.selectedTile == position} lastMove={this.state.moves[this.state.moves.length-1]} />);
+        }
+        rows.push(<div className="row">{tiles}</div>);
       }
-      rows.push(<div className="row">{tiles}</div>);
     }
-    return (<div className="board">
-      {rows}
+    else{
+      for(let r = 1; r <= 8; r++){
+        let tiles = [];
+        for(let i = 8; i >= 1; i--){
+          let blackOrWhite = r % 2 != 0 ? (i%2 !=0 ? 'black':'white') : (i%2 == 0 ? 'black':'white');
+          let position = numToLetter[i]+r;
+          tiles.push(<Tile color={blackOrWhite} position={position} click={this.tileClicked}
+                           figure={this.state.figures.find((fig) => fig.position == position)}
+                           isSelected={this.state.selectedTile == position} lastMove={this.state.moves[this.state.moves.length-1]}/>);
+        }
+        rows.push(<div className="row">{tiles}</div>);
+      }
+    }
+    
+    return (<div>
+      <div className="board col">{rows}</div>
+      <div className="col movesBlock">
+        <h3>Moves</h3>
+        {moves}
+      </div>
     </div>);
   }
 } 

@@ -16,9 +16,31 @@ body {
   display:inline-block;
 }
 .black{
-  background-color: black;
+  background-color: silver;
 }
 
 .icon{
   width:100%;
+}
+
+.selected {
+  background-color:rgba(0,255,0,0.5);
+}
+
+.col{
+  display:inline-block;
+}
+.movesBlock{
+  vertical-align: top;
+  height: 450px;
+  overflow-y: scroll;
+  width: 150px;
+  text-align: center;
+}
+
+.newMove {
+  background-color:rgba(194, 54, 22,0.8);
+}
+.oldMove {
+  background-color:rgba(52,152,219,0.3);
 }

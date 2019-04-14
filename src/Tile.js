@@ -12,7 +12,16 @@ export default class Tile extends Component {
     if(this.props.figure){
       figure = <img src={'/assets/' + this.props.figure.color + '_' + this.props.figure.type + '.png'} className='icon'/>;
     }
-    return <div className={'tile ' + this.props.color} onClick={() => this.props.onClick(this.props.position, this.props.figure)}>
+    let moveClass = '';
+    if(this.props.lastMove){
+      if(this.props.position === this.props.lastMove.position){
+        moveClass = 'oldMove';
+      }
+      else if(this.props.position === this.props.lastMove.position1){
+        moveClass = 'newMove';
+      }
+    }
+    return <div className={`tile ${this.props.color} ${this.props.isSelected ? 'selected':''} ${moveClass} `} onClick={() => this.props.click(this.props.position, this.props.figure)}>
       {figure}
     </div>;
   }
